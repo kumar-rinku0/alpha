@@ -2,102 +2,23 @@
 package alpha;
 
 public class StringC {
-     static class Node {
-
-        Node child[];
-        boolean eow;
-
-        Node() {
-            this.child = new Node[26];
-            for (int i = 0; i < 26; i++) {
-                child[i] = null;
-            }
-            this.eow = false;
-        }
-    }
-
-   
-    static Node node = new Node();
-    public static Node insert(String word) {
-        Node root = node;
-        for (int i = 0; i < word.length(); i++) {
-            int idx = word.charAt(i) - 'a';
-            if (root.child[idx] == null) {
-                root.child[idx] = new Node();
-            }
-            if (i == word.length() - 1) {
-                root.child[idx].eow = true;
-            }
-            root = root.child[idx];
-        }
-        return root;
-    }
-    
-    public static boolean search(String key) {
-        Node root = node;
-        for(int i=0; i<key.length(); i++) {
-            int idx = key.charAt(i) - 'a';
-            if(root.child[idx] == null) {
-                return false;
-            }
-            if(i == key.length()-1 && !root.child[idx].eow) {
-                return false;
-            }
-            root = root.child[idx];
-        }
-        return true;
-    }
-    public boolean wordBreak(String key) {
-        if(key.length() == 0) {
-            return true;
-        }
-        for(int i=0; i<key.length(); i++) {
-            String firstPartOfString = key.substring(0, i+1);
-            String secondPartOfString = key.substring(i+1);
-            if(search(firstPartOfString) && wordBreak(secondPartOfString)) {
-                return true;
+    public String bullsAndCows(String secret, String guess) {
+        int bull = 0;
+        int s[] = new int[10]; // fquency of secret character
+        int g[] = new int[10]; // fquency of guess character
+        for(int i=0; i<secret.length(); i++) {
+            if(secret.charAt(i) == guess.charAt(i)) {
+                bull++;
+            } else {
+                s[secret.charAt(i) - '0']++;
+                g[guess.charAt(i) - '0']++;
             }
         }
-        return false;
-    }
-    public boolean startsWith(String key) {
-        Node root  = node;
-        for(int i=0; i<key.length(); i++) {
-            int idx = key.charAt(i)-'a'; 
-            if(root.child[idx] == null) {
-                return false;
-            }
-            root = root.child[idx];
+        int cow = 0;
+        for(int i=0; i<10; i++) {
+            cow += Math.min(s[i], g[i]);
         }
-        return true;
-    }
-    public int countNodes(Node root) {
-        if(root == null) {
-            return 0;
-        }
-        int count = 0;
-        for(int i=0; i<26; i++) {
-            if(root.child[i] != null) {
-                count += countNodes(root.child[i]);
-            }
-        }
-        return count+1;
-    }
-    public static String ans = "";
-    public void longestWord(Node root, StringBuilder temp) {
-        if(root == null) {
-            return;
-        }
-        for(int i=0; i<26; i++) {
-            if(root.child[i] != null && root.child[i].eow == true) {
-                temp.append((char)(i+'a'));
-                if(temp.length() > ans.length()) {
-                    ans = temp.toString();
-                }
-                longestWord(root.child[i], temp);
-                temp.deleteCharAt(temp.length()-1);
-            }
-        }
+        return Integer.toString(bull)+"A"+Integer.toString(cow)+"B";
     }
     private static void printPermutation(String str, String ans) {
         if(str.length() == 0) {
